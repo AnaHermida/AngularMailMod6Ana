@@ -18,6 +18,7 @@ export class CambioPasswordComponent implements OnInit {
   form: FormGroup;
   hideActual = true;  // Utilizado para mostrar u ocultar la contraseña actual
   hideNueva = true;  // Utilizado para mostrar u ocultar la nueva contraseña
+  hideRepite=true;
 
   /**
    * Constructor, con objetos instanciados por el inyector
@@ -35,6 +36,7 @@ export class CambioPasswordComponent implements OnInit {
     this.form = new FormGroup({
       actual: new FormControl ('', [Validators.required]),
       nueva: new FormControl ('', [Validators.required]),
+      repite: new FormControl('',[Validators.required] )
     });
 
   }
@@ -43,6 +45,13 @@ export class CambioPasswordComponent implements OnInit {
    * Actualizo el password por uno nuevo
    */
   actualizarPassword() {
+
+    //compruebo que las contraseñas son iguales
+
+    if (this.form.controls.nueva.value != this.form.controls.repite.value){
+      //abro dialogo
+      this.comunicacionAlertas.abrirDialogError('Las contraseñas no coinciden.');
+    } else { //cambio contraseña
      // Compruebo si la contraseña escrita es real para el usuario autenticado
     this.comunicacionAlertas.abrirDialogCargando();
     var actualEncriptada = this.encriptaMD5(this.form.controls.actual.value); // Encripto la contraseña con MD5
@@ -54,6 +63,7 @@ export class CambioPasswordComponent implements OnInit {
       }
       else { // Se ha ratificado la contraseña actual, se lanza el cambio de contraseña
 
+        
         // Lanzo la llamada al cambio de contraseña
         var nuevaEncriptada = this.encriptaMD5(this.form.controls.nueva.value); // Encripto la nueva contraseña
         // Envio al servicio la petición de cambio de contraseña
@@ -69,6 +79,8 @@ export class CambioPasswordComponent implements OnInit {
         })
       }
     });
+
+  }
   }
 
   /**
